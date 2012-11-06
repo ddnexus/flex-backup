@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rdoc_options              = %w[--charset=UTF-8]
 
-  s.add_runtime_dependency 'flex', '>= 0.4.0'
+  s.add_runtime_dependency 'flex', '>= 0.5.0'
 end

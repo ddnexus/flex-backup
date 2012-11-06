@@ -3,6 +3,23 @@
 require 'optparse'
 require 'flex'
 
+module FlexBackup
+
+  extend self
+
+  include Flex::Loader
+
+  flex.load_search_source <<-yaml
+    scan_all:
+      - query:
+          match_all: {}
+      - :params:
+          :search_type: scan
+          :fields: '_source,*'
+    yaml
+
+end
+
 options  = { }
 version  = File.read(File.expand_path('../../VERSION', __FILE__)).strip
 copy     = "flex-backup #{version} (c) 2012 Domizio Demichelis"
@@ -93,25 +110,18 @@ puts copy
 case command
 
 when 'dump'
-  search_t    = Flex::Template::Search.new( {:query => {:match_all => {}}},
-                                            :params => { :search_type => 'scan',
-                                                         :scroll      => options[:scroll],
-                                                         :size        => options[:size],
-                                                         :fields      => '_source,*' } )
-  scroll_t    = Flex::Template.new( :get,
-                                    '/_search/scroll',
-                                    nil,
-                                    :params => { :scroll => options[:scroll] } )
-  search_res  = search_t.render options
-  scroll_id   = search_res['_scroll_id']
-  total_hits  = search_res['hits']['total']
+  vars = { :index  => options[:index],
+           :type   => options[:type] }
+  total_hits  = Flex.count(vars)['count']
+
+  vars.merge :params => { :scroll => options[:scroll],
+                          :size   => options[:size] }
   total_count = 0
   pbar        = Flex::ProgBar.new(total_hits)
   dump_stats  = Hash.new { |hash, key| hash[key] = Hash.new{|h,k| h[k] = 0} }
   file_size   = 0
   File.open(options[:file], 'wb') do |file|
-    while (result = scroll_t.render(:data => scroll_id)) do
-      break if result['hits']['hits'] == []
+    FlexBackup.flex.scroll_search(:scan_all, vars) do |result|
       lines = result['hits']['hits'].map do |h|
                 dump_stats[h['_index']][h['_type']] += 1
                 meta = { :_index => h['_index'],
@@ -126,7 +136,6 @@ when 'dump'
                   MultiJson.encode(h['_source']) ].join("\n")
               end
       file.puts lines.join("\n")
-      scroll_id = result['_scroll_id']
       total_count += lines.size
       pbar.pbar.inc(lines.size)
     end

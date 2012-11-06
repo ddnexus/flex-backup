@@ -13,9 +13,6 @@ module FlexBackup
     scan_all:
       - query:
           match_all: {}
-      - :params:
-          :search_type: scan
-          :fields: '_source,*'
     yaml
 
 end
@@ -112,16 +109,16 @@ case command
 when 'dump'
   vars = { :index  => options[:index],
            :type   => options[:type] }
-  total_hits  = Flex.count(vars)['count']
-
+  total_hits  = FlexBackup.flex.count_search(:scan_all, vars)['hits']['total']
   vars.merge :params => { :scroll => options[:scroll],
-                          :size   => options[:size] }
+                          :size   => options[:size],
+                          :fields => '_source,*' }
   total_count = 0
   pbar        = Flex::ProgBar.new(total_hits)
   dump_stats  = Hash.new { |hash, key| hash[key] = Hash.new{|h,k| h[k] = 0} }
   file_size   = 0
   File.open(options[:file], 'wb') do |file|
-    FlexBackup.flex.scroll_search(:scan_all, vars) do |result|
+    FlexBackup.flex.scan_search(:scan_all, vars) do |result|
       lines = result['hits']['hits'].map do |h|
                 dump_stats[h['_index']][h['_type']] += 1
                 meta = { :_index => h['_index'],

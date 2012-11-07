@@ -9,10 +9,9 @@ module FlexBackup
 
   include Flex::Loader
 
-  flex.load_search_source <<-yaml
-    scan_all:
-      - query:
-          match_all: {}
+  flex.define_search :scan_all, <<-yaml
+    query:
+      match_all: {}
     yaml
 
 end

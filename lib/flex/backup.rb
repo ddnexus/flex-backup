@@ -78,7 +78,7 @@ module Flex
     end
 
     def load_tasks
-      load File.expand_path('../tasks.rb', __FILE__)
+      load File.expand_path('../../tasks.rb', __FILE__)
     end
 
   end

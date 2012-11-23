@@ -96,7 +96,7 @@ when 'dump'
   Flex::Backup.dump_to_file(options)
 
 when 'load'
-  Flex::FlexBackup.load_from_file(options)
+  Flex::Backup.load_from_file(options)
 
 when 'stats'
   puts '>> puts Flex.stats.to_yaml'

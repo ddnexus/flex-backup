@@ -1,19 +1,19 @@
 require 'flex'
 require 'flex-backup'
 
-env   = defined?(Rails) ? :environment : []
-tasks = Flex::Backup::Tasks.new
+env = defined?(Rails) ? :environment : []
 
 namespace :flex do
 
   desc 'Dumps the data from one or more ElasticSearch indices to a file'
-  task(:dump => env) { tasks.dump_to_file }
+  task(:dump => env) { Flex::Backup::Tasks.new.dump_to_file }
 
   desc 'Loads a dumpfile into ElasticSearch'
-  task(:load => env) { tasks.load_from_file }
+  task(:load => env) { Flex::Backup::Tasks.new.load_from_file }
 
   desc 'dump, re-create the index and load the data again'
   task(:reindex => env) do
+    tasks = Flex::Backup::Tasks.new
     require 'tempfile'
     begin
       tempfile = Tempfile.new %w[flex-backup dump], :encoding => 'UTF-8'

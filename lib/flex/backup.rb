@@ -1,15 +1,6 @@
 module Flex
   module Backup
 
-    DEFAULT_OPTIONS = { :file       => './flex-backup.dump',
-                        :index      => nil,
-                        :type       => nil,
-                        :scroll     => '5m',
-                        :size       => 50,
-                        :timeout    => 20,
-                        :batch_size => 1000,
-                        :verbose    => true }
-
     extend self
 
     include Flex::Loader
@@ -28,13 +19,25 @@ module Flex
       attr_reader :options
 
       def initialize(overrides={})
-        options = Flex::Utils.env2options *Flex::Backup::DEFAULT_OPTIONS.keys
+        options = Flex::Utils.env2options *default_options.keys
 
         options[:size]       = options[:size].to_i       if options[:size]
         options[:timeout]    = options[:timeout].to_i    if options[:timeout]
         options[:batch_size] = options[:batch_size].to_i if options[:batch_size]
 
-        @options = DEFAULT_OPTIONS.merge(options).merge(overrides)
+        @options = default_options.merge(options).merge(overrides)
+      end
+
+      
+      def default_options
+        @default_options ||= { :file       => './flex-backup.dump',
+                               :index      => Conf.variables[:index],
+                               :type       => Conf.variables[:type],
+                               :scroll     => '5m',
+                               :size       => 50,
+                               :timeout    => 20,
+                               :batch_size => 1000,
+                               :verbose    => true }
       end
 
 

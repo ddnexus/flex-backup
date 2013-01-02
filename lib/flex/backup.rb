@@ -10,10 +10,6 @@ module Flex
         match_all: {}
       yaml
 
-    def load_tasks
-      load File.expand_path('../../tasks.rb', __FILE__)
-    end
-
     class Tasks
 
       attr_reader :options
@@ -28,7 +24,6 @@ module Flex
         @options = default_options.merge(options).merge(overrides)
       end
 
-      
       def default_options
         @default_options ||= { :file       => './flex-backup.dump',
                                :index      => Conf.variables[:index],
@@ -39,7 +34,6 @@ module Flex
                                :batch_size => 1000,
                                :verbose    => true }
       end
-
 
       def dump_to_file
         vars = { :index => options[:index],

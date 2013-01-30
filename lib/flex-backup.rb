@@ -1,4 +1,4 @@
 require 'flex'
 require 'flex/backup'
 
-Flex::LIB_PATHS << __FILE__.sub(/flex-backup.rb$/, '')
+Flex::LIB_PATHS << File.dirname(__FILE__)

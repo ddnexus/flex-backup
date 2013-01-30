@@ -3,7 +3,7 @@ module Flex
 
     extend self
 
-    include Flex::Loader
+    include Templates
 
     flex.define_search :scan_all, <<-yaml
       query:

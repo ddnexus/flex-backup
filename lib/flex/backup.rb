@@ -86,7 +86,7 @@ module Flex
       end
 
       def load_from_file
-        Configuration.http_client_options[:timeout] = options[:timeout]
+        Configuration.http_client.options[:timeout] = options[:timeout]
         chunk_size = options[:batch_size] * 2 # 2 lines per doc
         lines      = ''
         file       = options[:file].is_a?(String) ? File.open(options[:file]) : options[:file]

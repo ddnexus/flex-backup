@@ -3,7 +3,8 @@
 require 'optparse'
 require 'flex-backup'
 
-options  = Flex::Backup::DEFAULT_OPTIONS.dup
+options  = Flex::Backup::Tasks.new.options
+
 version  = File.read(File.expand_path('../../VERSION', __FILE__)).strip
 copy     = "flex-backup #{version} (c) 2012 Domizio Demichelis"
 optparse = OptionParser.new do |opts|

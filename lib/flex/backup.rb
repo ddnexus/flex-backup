@@ -45,9 +45,9 @@ module Flex
           dump_stats  = Hash.new { |hash, key| hash[key] = Hash.new { |h, k| h[k] = 0 } }
           file_size   = 0
         end
-        vars.merge :params => { :scroll => options[:scroll],
-                                :size   => options[:size],
-                                :fields => '_source,*' }
+        vars.merge! :params => { :scroll => options[:scroll],
+                                 :size   => options[:size],
+                                 :fields => '_source,*' }
 
         file = options[:file].is_a?(String) ? File.open(options[:file], 'wb') : options[:file]
         path = file.path

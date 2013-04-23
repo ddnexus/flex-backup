@@ -21,7 +21,7 @@ optparse = OptionParser.new do |opts|
         stats  prints the full ElasticSearch stats
 
     Notice: The load command will load the dump-file into ElasticSearch without removing any pre-existent data.
-            If you need fresh indices, use the flex:delete_indices and flex:create_indices rake tasks from your
+            If you need fresh indices, use the flex:index:delete and flex:index:create rake tasks from your
             application, which will also recreate the mapping.
   banner
 
@@ -33,7 +33,7 @@ optparse = OptionParser.new do |opts|
     options[:file] = f
   end
 
-  opts.on( '--[no-]verbose' "Run verbosely (default: '#{options[:verbose]}')" ) do |q|
+  opts.on( '-r', '--[no-]verbose', "Run verbosely (default: '#{options[:verbose]}')" ) do |q|
     options[:verbose] = q
   end
 

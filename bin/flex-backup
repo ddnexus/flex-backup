@@ -6,7 +6,7 @@ require 'flex-backup'
 options  = Flex::Backup::Tasks.new.options
 
 version  = File.read(File.expand_path('../../VERSION', __FILE__)).strip
-copy     = "flex-backup #{version} (c) 2012 Domizio Demichelis"
+copy     = "flex-backup #{version} (c) 2012-2013 by Domizio Demichelis"
 optparse = OptionParser.new do |opts|
 
   opts.banner = <<-banner
@@ -22,7 +22,7 @@ optparse = OptionParser.new do |opts|
 
     Notice: The load command will load the dump-file into ElasticSearch without removing any pre-existent data.
             If you need fresh indices, use the flex:index:delete and flex:index:create rake tasks from your
-            application, which will also recreate the mapping.
+            application, which will also recreate the mapping. If you need to reindex you can use flex:backup:reindex.
   banner
 
 

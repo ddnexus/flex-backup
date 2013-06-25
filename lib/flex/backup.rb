@@ -17,11 +17,14 @@ module Flex
       def initialize(overrides={})
         options = Flex::Utils.env2options *default_options.keys
 
+        options = default_options.merge(options).merge(overrides)
+
         options[:size]       = options[:size].to_i       if options[:size]
         options[:timeout]    = options[:timeout].to_i    if options[:timeout]
         options[:batch_size] = options[:batch_size].to_i if options[:batch_size]
+        options[:index_map]  = Hash[options[:index_map].split(',').map{|i|i.split(':')}] if options[:index_map]
 
-        @options = default_options.merge(options).merge(overrides)
+        @options = options
       end
 
       def default_options
@@ -32,7 +35,8 @@ module Flex
                                :size       => 50,
                                :timeout    => 20,
                                :batch_size => 1000,
-                               :verbose    => true }
+                               :verbose    => true,
+                               :index_map  => nil }
       end
 
       def dump_to_file
@@ -99,7 +103,7 @@ module Flex
           pbar = ProgBar.new(line_count / 2, options[:batch_size])
         end
         file.lines do |line|
-          lines << line
+          lines << (options[:index_map] ? map_index(line) : line)
           if file.lineno % chunk_size == 0
             result = Flex.bulk :lines => lines
             lines  = ''
@@ -113,6 +117,16 @@ module Flex
         end
         file.close
         pbar.finish if options[:verbose]
+      end
+
+
+    private
+
+      def map_index(line)
+        joined_keys = options[:index_map].keys.join('|')
+        line.sub(/"_index":"(#{joined_keys})"/) do |match_string|
+          options[:index_map].has_key?($1) ? %("_index":"#{options[:index_map][$1]}") : match_string
+        end
       end
 
     end

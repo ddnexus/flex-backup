@@ -3,7 +3,7 @@
 require 'optparse'
 require 'flex-backup'
 
-options  = Flex::Backup::Tasks.new.options
+options  = Flex::Backup::Tasks.new.default_options
 
 version  = File.read(File.expand_path('../../VERSION', __FILE__)).strip
 copy     = "flex-backup #{version} (c) 2012-2013 by Domizio Demichelis"
@@ -59,11 +59,15 @@ optparse = OptionParser.new do |opts|
   opts.separator ''
   opts.separator 'Load options:'
 
+  opts.on( '-m', '--index-map [INDEX_MAP]', 'The index rename map (example: -m=dumped_index_name:loaded_index_name,a:b)') do |m|
+    options[:index_map] = m
+  end
+
   opts.on( '-o', '--timeout [SECONDS]', Integer, "The http_client timeout for bulk loading (default: #{options[:timeout]} seconds)" ) do |o|
     options[:timeout] = o
   end
 
-  opts.on( '-b', '--batch_size [BATCH_SIZE]', Integer, "The batch size to load (default: #{options[:batch_size]})" ) do |z|
+  opts.on( '-b', '--batch-size [BATCH_SIZE]', Integer, "The batch size to load (default: #{options[:batch_size]})" ) do |z|
     options[:batch_size] = z
   end
 
@@ -97,8 +101,8 @@ when 'load'
   Flex::Backup::Tasks.new(options).load_from_file
 
 when 'stats'
-  puts '>> puts Flex.stats.to_yaml'
-  puts Flex.stats.to_yaml
+  puts '>> puts Flex.index_stats.to_yaml'
+  puts Flex.index_stats.to_yaml
 
 else
   puts "unknown command: #{command.inspect}"

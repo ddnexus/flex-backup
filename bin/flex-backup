@@ -12,17 +12,19 @@ optparse = OptionParser.new do |opts|
   opts.banner = <<-banner
 
     flex-backup:
-        Flex tool to dump/load data from/to ElasticSearch.
+        Generic binary tool to dump/load data from/to any elasticsearch index (no app needed).
+        If you need to migrate data, use the flex migration mechanism, that provides live reindexing.
+
     Usage:
         flex-backup <command> [options]
     <command>:
-        dump   dumps the data from one or more ElasticSearch indices
-        load   loads a dumpfile
-        stats  prints the full ElasticSearch stats
+        dump    dumps the data from one or more elasticsearch indices
+        load    loads a dumpfile
+        stats   prints the full elasticsearch stats
 
-    Notice: The load command will load the dump-file into ElasticSearch without removing any pre-existent data.
+    Notice: The load command will load the dump-file into elasticsearch without removing any pre-existent data.
             If you need fresh indices, use the flex:index:delete and flex:index:create rake tasks from your
-            application, which will also recreate the mapping. If you need to reindex you can use flex:backup:reindex.
+            application, which will also recreate the mapping.
   banner
 
 
@@ -95,7 +97,7 @@ puts copy
 case command
 
 when 'dump'
-  Flex::Backup::Tasks.new(options).dump_to_file
+  Flex::Backup::Tasks.new(options).dump_to_file(true)
 
 when 'load'
   Flex::Backup::Tasks.new(options).load_from_file

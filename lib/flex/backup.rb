@@ -22,7 +22,7 @@ module Flex
         options[:size]       = options[:size].to_i       if options[:size]
         options[:timeout]    = options[:timeout].to_i    if options[:timeout]
         options[:batch_size] = options[:batch_size].to_i if options[:batch_size]
-        options[:index_map]  = Hash[options[:index_map].split(',').map{|i|i.split(':')}] if options[:index_map]
+        options[:index_map]  = Hash[options[:index_map].split(',').map{|i|i.split(':')}] if options[:index_map] && options[:index_map].is_a?(String)
 
         @options = options
       end
@@ -39,8 +39,8 @@ module Flex
                                :index_map  => nil }
       end
 
-      def dump_to_file
-        vars = { :index => options[:index],
+      def dump_to_file(from_bin=false)
+        vars = { :index => from_bin ? options[:index] : (options[:index] || Flex::Tasks.new.config_hash.keys),
                  :type  => options[:type] }
         if options[:verbose]
           total_hits  = Backup.flex.count_search(:scan_all, vars)['hits']['total']
@@ -118,7 +118,6 @@ module Flex
         file.close
         pbar.finish if options[:verbose]
       end
-
 
     private
 

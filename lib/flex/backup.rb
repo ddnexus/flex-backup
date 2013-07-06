@@ -17,14 +17,12 @@ module Flex
       def initialize(overrides={})
         options = Flex::Utils.env2options *default_options.keys
 
-        options = default_options.merge(options).merge(overrides)
-
         options[:size]       = options[:size].to_i       if options[:size]
         options[:timeout]    = options[:timeout].to_i    if options[:timeout]
         options[:batch_size] = options[:batch_size].to_i if options[:batch_size]
         options[:index_map]  = Hash[options[:index_map].split(',').map{|i|i.split(':')}] if options[:index_map] && options[:index_map].is_a?(String)
 
-        @options = options
+        @options = default_options.merge(options).merge(overrides)
       end
 
       def default_options
@@ -39,8 +37,8 @@ module Flex
                                :index_map  => nil }
       end
 
-      def dump_to_file(from_bin=false)
-        vars = { :index => from_bin ? options[:index] : (options[:index] || Flex::Tasks.new.config_hash.keys),
+      def dump_to_file(cli=false)
+        vars = { :index => cli ? options[:index] : (options[:index] || Flex::Tasks.new.config_hash.keys),
                  :type  => options[:type] }
         if options[:verbose]
           total_hits  = Backup.flex.count_search(:scan_all, vars)['hits']['total']

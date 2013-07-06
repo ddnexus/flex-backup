@@ -50,7 +50,7 @@ optparse = OptionParser.new do |opts|
     options[:type] = t
   end
 
-  opts.on( '-s', '--scroll [TIME]', "The ElasticSearch scroll time (default: #{options[:scroll]})" ) do |s|
+  opts.on( '-s', '--scroll [TIME]', Integer, "The ElasticSearch scroll time (default: #{options[:scroll]})" ) do |s|
     options[:scroll] = s
   end
 
@@ -62,7 +62,7 @@ optparse = OptionParser.new do |opts|
   opts.separator 'Load options:'
 
   opts.on( '-m', '--index-map [INDEX_MAP]', 'The index rename map (example: -m=dumped_index_name:loaded_index_name,a:b)') do |m|
-    options[:index_map] = m
+    options[:index_map] = Hash[m.split(',').map{|i|i.split(':')}]
   end
 
   opts.on( '-o', '--timeout [SECONDS]', Integer, "The http_client timeout for bulk loading (default: #{options[:timeout]} seconds)" ) do |o|

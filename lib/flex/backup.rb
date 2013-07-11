@@ -1,15 +1,6 @@
 module Flex
   module Backup
 
-    extend self
-
-    include Templates
-
-    flex.define_search :scan_all, <<-yaml
-      query:
-        match_all: {}
-      yaml
-
     class Tasks
 
       attr_reader :options
@@ -41,7 +32,7 @@ module Flex
         vars = { :index => cli ? options[:index] : (options[:index] || Flex::Tasks.new.config_hash.keys),
                  :type  => options[:type] }
         if options[:verbose]
-          total_hits  = Backup.flex.count_search(:scan_all, vars)['hits']['total']
+          total_hits  = Flex.count(vars)['count'].to_i
           total_count = 0
           pbar        = ProgBar.new(total_hits)
           dump_stats  = Hash.new { |hash, key| hash[key] = Hash.new { |h, k| h[k] = 0 } }
@@ -54,8 +45,8 @@ module Flex
         file = options[:file].is_a?(String) ? File.open(options[:file], 'wb') : options[:file]
         path = file.path
 
-        Backup.flex.scan_search(:scan_all, vars) do |result|
-          lines = result['hits']['hits'].map do |h|
+        Flex.scan_all(vars, :params => {:fields => '*,_source'}) do |batch|
+          lines = batch.map do |h|
                     dump_stats[h['_index']][h['_type']] += 1 if options[:verbose]
                     meta = { :_index => h['_index'],
                              :_type  => h['_type'],

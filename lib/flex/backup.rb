@@ -45,24 +45,16 @@ module Flex
         file = options[:file].is_a?(String) ? File.open(options[:file], 'wb') : options[:file]
         path = file.path
 
-        Flex.scan_all(vars, :params => {:fields => '*,_source'}) do |batch|
-          lines = batch.map do |h|
-                    dump_stats[h['_index']][h['_type']] += 1 if options[:verbose]
-                    meta = { :_index => h['_index'],
-                             :_type  => h['_type'],
-                             :_id    => h['_id'] }
-                    if h.has_key?('fields')
-                      h['fields'].each do |k, v|
-                        meta[k] = v if k[0] == '_'
-                      end
-                    end
-                    [ MultiJson.encode({ 'index' => meta }),
-                      MultiJson.encode(h['_source']) ].join("\n")
-                  end
-          file.puts lines.join("\n")
+        Flex.dump_all(vars) do |batch|
+          bulk_string = ''
+          batch.each do |document|
+            dump_stats[document['_index']][document['_type']] += 1 if options[:verbose]
+            bulk_string << Flex.build_bulk_string(document)
+          end
+          file.puts bulk_string
           if options[:verbose]
-            total_count += lines.size
-            pbar.pbar.inc(lines.size)
+            total_count += batch.size
+            pbar.pbar.inc(batch.size)
           end
         end
         file_size = file.size if options[:verbose]

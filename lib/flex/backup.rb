@@ -72,10 +72,10 @@ module Flex
 
       def load_from_file
         Configuration.http_client.options[:timeout] = options[:timeout]
-        chunk_size = options[:batch_size] * 2 # 2 lines per doc
-        lines      = ''
-        file       = options[:file].is_a?(String) ? File.open(options[:file]) : options[:file]
-        path       = file.path
+        chunk_size  = options[:batch_size] * 2 # 2 lines per doc
+        bulk_string = ''
+        file        = options[:file].is_a?(String) ? File.open(options[:file]) : options[:file]
+        path        = file.path
         if options[:verbose]
           line_count = 0
           file.lines { line_count += 1 }
@@ -84,16 +84,16 @@ module Flex
           pbar = ProgBar.new(line_count / 2, options[:batch_size])
         end
         file.lines do |line|
-          lines << (options[:index_map] ? map_index(line) : line)
-          if file.lineno % chunk_size == 0
-            result = Flex.bulk :lines => lines
-            lines  = ''
+          bulk_string << (options[:index_map] ? map_index(line) : line)
+          if (file.lineno % chunk_size) == 0
+            result = Flex.post_bulk_string :bulk_string => bulk_string
+            bulk_string  = ''
             pbar.process_result(result, options[:batch_size]) if options[:verbose]
           end
         end
         # last chunk
-        unless lines == ''
-          result = Flex.bulk :lines => lines
+        unless bulk_string == ''
+          result = Flex.post_bulk_string :bulk_string => bulk_string
           pbar.process_result(result, (file.lineno % chunk_size) / 2) if options[:verbose]
         end
         file.close

@@ -3,8 +3,8 @@ version = File.read(File.expand_path('../VERSION', __FILE__)).strip
 
 Gem::Specification.new do |s|
   s.name                      = 'flex-backup'
-  s.summary                   = 'Backup CLI to dump/load data from/to ElasticSearch'
-  s.description               = 'Simple tool to dump/load one or more ElasticSearch indices and types'
+  s.summary                   = 'Simple tool to dump/load one or more elasticsearch indices and types.'
+  s.description               = 'Simple tool to dump/load one or more elasticsearch indices and types.'
   s.homepage                  = 'http://github.com/ddnexus/flex-backup'
   s.authors                   = ["Domizio Demichelis"]
   s.email                     = 'dd.nexus@gmail.com'

@@ -2,8 +2,9 @@
 
 Simple tool to dump/load one or more elasticsearch indices and types.
 
-## Useful Links
+## Links
 
+* [Flex Repository](https://github.com/ddnexus/flex)
 * [Flex Project (Global Documentation)](http://ddnexus.github.io/flex/doc/)
 * [flex-backup Gem (Specific Documentation)](http://ddnexus.github.io/flex/doc/6-flex-backup)
 * [Issues](https://github.com/ddnexus/flex-backup/issues)
